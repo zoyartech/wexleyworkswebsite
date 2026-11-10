@@ -1,52 +1,250 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Instrument+Sans:wght@400..600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
+/* Wexley design tokens. Calm editorial: light grey paper, ink type, one deep teal accent,
+   sage for accent bands, pale blue-grey for hovers. */
 @theme {
-  --font-display: 'Instrument Sans', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --color-wex-black: #0d0d0d;
-  --color-wex-white: #f8f7f4;
-  --color-wex-accent: #3dafc9;
-  --color-wex-gray: #6b6b6b;
-  --color-wex-border: #e0ddd8;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --color-paper: #f4f4f4;
+  --color-band: #eaeaea;
+  --color-ink: #141414;
+  --color-body: #3a3835;
+  --color-muted: #6b665e;
+  --color-rule: #dadada;
+  --color-underline: #b5b5b5;
+  --color-accent: #1d5c63;
+  --color-sage: #ccddcd;
+  --color-sage-ink: #3f4a40;
+  --color-hover: #c3d4d6;
+  --color-graphite: #393939;
+  --color-graphite-rule: #555555;
+  --color-graphite-muted: #b8b8b8;
+  --color-graphite-body: #d9d4cb;
 }
 
-* {
-  box-sizing: border-box;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.55;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Sections reached from the nav sit below the sticky header. */
+  [id] {
+    scroll-margin-top: 96px;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
+@layer components {
+  /* Small mono label above headings. */
+  .wx-eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* Serif display headings. */
+  .wx-h1,
+  .wx-h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 350;
+    letter-spacing: -0.03em;
+    color: inherit;
+  }
+  .wx-h1 {
+    font-size: clamp(46px, 6.6vw, 94px);
+    line-height: 1;
+  }
+  .wx-h2 {
+    font-size: clamp(36px, 4.2vw, 58px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+  .wx-h1 em,
+  .wx-h2 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--color-accent);
+  }
+
+  /* Primary button: ink, turns pale blue-grey on hover. */
+  .wx-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 24px;
+    border-radius: 6px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-weight: 600;
+    font-size: 16.5px;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background-color 0.15s, color 0.15s;
+  }
+  .wx-btn-sm {
+    padding: 12px 20px;
+    font-size: 15.5px;
+  }
+  /* On dark sections. */
+  .wx-btn-light {
+    background: var(--color-sage);
+    color: var(--color-ink);
+  }
+  /* Underlined text link; a pale pill appears behind it on hover. */
+  .wx-link {
+    display: inline-block;
+    padding: 12px 10px;
+    margin: 0 -10px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-underline);
+    text-underline-offset: 6px;
+    text-decoration-thickness: 1.5px;
+    transition: background-color 0.15s, text-decoration-color 0.15s;
+  }
+  /* Plain nav and footer links. */
+  .wx-pill {
+    padding: 12px 10px;
+    margin: 0 -8px;
+    border-radius: 6px;
+    color: var(--color-body);
+    text-decoration: none;
+    transition: background-color 0.15s;
+  }
+  /* Case study cards. */
+  .wx-card {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    border: 1px solid var(--color-rule);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: background-color 0.15s, border-color 0.15s;
+  }
+  /* Article list rows. */
+  .wx-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 40px;
+    padding: 28px 16px;
+    margin: 0 -16px;
+    border-radius: 6px;
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: background-color 0.15s;
+  }
+  /* Logo wall tiles. */
+  .wx-tile {
+    background: #fff;
+    color: #57534e;
+    transition: background-color 0.2s, color 0.2s;
+  }
 }
 
-body {
-  font-family: var(--font-body);
-  background-color: #f8f7f4;
-  color: #0d0d0d;
-  -webkit-font-smoothing: antialiased;
+/* Hover and current-page states sit outside the layers so they win over Tailwind utilities. */
+.wx-btn:hover {
+  background: var(--color-hover);
+  color: var(--color-ink);
+}
+.wx-link:hover {
+  background: var(--color-hover);
+  text-decoration-color: var(--color-ink);
+}
+.wx-pill:hover,
+.wx-pill[aria-current='page'] {
+  background: var(--color-hover);
+  color: var(--color-ink);
+}
+.wx-card:hover {
+  background: var(--color-hover);
+  border-color: var(--color-hover);
+}
+.wx-row:hover {
+  background: var(--color-hover);
+}
+.wx-card:hover .wx-muted,
+.wx-row:hover .wx-muted {
+  color: var(--color-body);
+}
+.wx-tile:hover {
+  background: var(--color-hover);
+  color: var(--color-ink);
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-
-/* Hide scrollbar for filter tab row */
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* Ticker animation */
-@keyframes ticker {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* Hero line: draws itself from Pilot to Production once, then the end dot pulses softly. */
+@keyframes wx-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
 }
+@keyframes wx-pop {
+  0% { opacity: 0; transform: scale(0.2); }
+  70% { opacity: 1; transform: scale(1.25); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes wx-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes wx-ring {
+  0% { opacity: 0; transform: scale(1); }
+  12% { opacity: 0.5; }
+  100% { opacity: 0; transform: scale(3.4); }
+}
+.wx-line { stroke-dasharray: 1; animation: wx-draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.4s both; }
+.wx-end { transform-box: fill-box; transform-origin: center; animation: wx-pop 0.5s ease-out 2.7s both; }
+.wx-end-label { animation: wx-fade 0.6s ease-out 2.8s both; }
+.wx-ring { opacity: 0; transform-box: fill-box; transform-origin: center; animation: wx-ring 2.4s ease-out 3.2s infinite both; }
 
-.ticker-track {
+/* "We work to" marquee. */
+@keyframes wx-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.3333%); }
+}
+.wx-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+}
+.wx-track {
   display: flex;
-  animation: ticker 28s linear infinite;
   width: max-content;
+  animation: wx-marquee 32s linear infinite;
+}
+.wx-marquee:hover .wx-track {
+  animation-play-state: paused;
 }
 
-.ticker-track:hover {
-  animation-play-state: paused;
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .wx-line, .wx-end, .wx-end-label, .wx-ring, .wx-track { animation: none; }
+  .wx-ring { display: none; }
 }

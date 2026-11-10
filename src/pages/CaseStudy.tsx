@@ -1,396 +1,263 @@
 import { useParams, Link } from "react-router";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { CASE_STUDIES } from "@/data/shared";
-import healthtechHero from "@/imports/7.png";
+
+const container = "mx-auto max-w-[1200px] px-5 md:px-10";
+const BEFORE = "#c9c9c9";
 
 export default function CaseStudy() {
   const { slug } = useParams();
+  const reduce = useReducedMotion();
   const cs = CASE_STUDIES.find((c) => c.slug === slug);
 
   if (!cs) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center px-6">
-        <div>
-          <h1 className="text-4xl font-bold mb-4">Case study not found</h1>
-          <Link to="/work" className="text-[#6b6b6b] underline underline-offset-4">← Back to Our Work</Link>
-        </div>
+      <div className={`${container} py-40 text-center`}>
+        <h1 className="wx-h2 mb-6">Case study not found</h1>
+        <Link to="/work" className="wx-link">
+          <span aria-hidden="true">←</span> All case studies
+        </Link>
       </div>
     );
   }
 
   const others = CASE_STUDIES.filter((c) => c.slug !== slug).slice(0, 2);
+  const grow = (delay = 0) => (reduce ? {} : { initial: { scaleX: 0 }, whileInView: { scaleX: 1 }, viewport: { once: true }, transition: { duration: 0.8, ease: "easeOut" as const, delay } });
+  const rise = (delay = 0) => (reduce ? {} : { initial: { scaleY: 0 }, whileInView: { scaleY: 1 }, viewport: { once: true }, transition: { duration: 0.6, ease: "easeOut" as const, delay } });
 
   return (
     <article>
-      {/* Hero image */}
-      <motion.div
-        className="relative h-[55vh] min-h-80 overflow-hidden bg-[#0d0d0d]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7 }}
-      >
-        <img src={slug === "healthtech-mlops" ? healthtechHero : cs.img} alt={cs.headline} className="w-full h-full object-cover opacity-[0.14] rounded-none" />
-        <div className="absolute inset-0 bg-white/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-12">
-          <motion.p
-            className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "var(--color-white)" }}
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            {cs.industry} · {cs.tags}
-          </motion.p>
-          <motion.h1
-            className="text-3xl md:text-5xl font-bold text-white leading-tight"
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            {cs.headline}
-          </motion.h1>
-        </div>
-      </motion.div>
-
-      {/* Body */}
-      <div className="max-w-4xl mx-auto px-6 py-20">
-        <Link to="/work" className="inline-flex items-center gap-2 text-sm hover:text-[#0d0d0d] transition-colors mb-12" style={{ color: "rgb(0,0,0)", fontWeight: 700 }}>
-          ← Back to Our Work
+      {/* Header */}
+      <header className={`${container} pt-12 pb-14`}>
+        <Link to="/work" className="wx-link text-[15px]">
+          <span aria-hidden="true">←</span> All case studies
         </Link>
+        <p className="wx-eyebrow mt-12 mb-6">
+          {cs.industry} · {cs.tags}
+        </p>
+        <h1 className="wx-h1 max-w-[16em] text-[clamp(40px,5.4vw,76px)] leading-[1.03]">{cs.headline}</h1>
+        <p className="mt-8 max-w-[34em] text-[clamp(18px,1.6vw,21px)] text-body">{cs.summary}</p>
+      </header>
 
-        {/* Meta row */}
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 rounded-none mb-16" style={{ backgroundColor: "var(--color-white)" }}
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.2 }}
-        >
+      {/* Facts */}
+      <section aria-label="Engagement facts" className="border-y border-rule">
+        <dl className={`${container} m-0 grid grid-cols-2 gap-x-8 gap-y-6 py-8 md:grid-cols-4`}>
           <div>
-            <p className="text-xs font-semibold tracking-widest uppercase text-[#6b6b6b] mb-1">Client</p>
-            <p className="font-bold">{cs.client}</p>
+            <dt className="wx-eyebrow mb-1.5 text-xs">Client</dt>
+            <dd className="m-0 font-semibold">{cs.client}</dd>
           </div>
           <div>
-            <p className="text-xs font-semibold tracking-widest uppercase text-[#6b6b6b] mb-1">Industry</p>
-            <p className="font-bold">{cs.industry}</p>
+            <dt className="wx-eyebrow mb-1.5 text-xs">Industry</dt>
+            <dd className="m-0 font-semibold">{cs.industry}</dd>
           </div>
           <div>
-            <p className="text-xs font-semibold tracking-widest uppercase text-[#6b6b6b] mb-1">Key Result</p>
-            <p className="font-bold text-[#3dafc9]" style={{ color: "#0d0d0d" }}>{cs.result}</p>
+            <dt className="wx-eyebrow mb-1.5 text-xs">Key result</dt>
+            <dd className="m-0 font-display text-[22px] leading-tight text-accent">{cs.result}</dd>
           </div>
           <div>
-            <p className="text-xs font-semibold tracking-widest uppercase text-[#6b6b6b] mb-1">Services</p>
-            <div className="flex flex-wrap gap-1">
+            <dt className="wx-eyebrow mb-1.5 text-xs">Services</dt>
+            <dd className="m-0 flex flex-wrap gap-1.5">
               {cs.services.map((s) => (
-                <span key={s} className="text-xs font-medium bg-[#0d0d0d] text-[#f8f7f4] px-2 py-0.5 rounded-none">{s}</span>
+                <span key={s} className="rounded-full border border-rule bg-white px-2.5 py-0.5 text-[13px] text-body">
+                  {s}
+                </span>
               ))}
-            </div>
+            </dd>
           </div>
-        </motion.div>
+        </dl>
+      </section>
 
-        {/* Summary */}
-        <motion.p
-          className="text-xl leading-relaxed mb-16 border-l-4 border-[#3dafc9] pl-6"
-          style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, color: "rgb(0,0,0)" }}
-          initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.55, delay: 0.3 }}
-        >
-          {cs.summary}
-        </motion.p>
-
-        {/* Metrics — healthtech-mlops only */}
+      <div className="mx-auto max-w-[880px] px-5 py-[clamp(64px,7vw,96px)] md:px-10">
+        {/* Results in numbers, healthtech engagement only */}
         {slug === "healthtech-mlops" && (
-          <motion.div
-            className="mb-20"
-            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.35 }}
-          >
-            {/* KPI strip */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+          <section aria-label="Results in numbers" className="mb-20 flex flex-col gap-5">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {[
-                { value: "60%", label: "Latency Reduction", sub: "inference pipeline" },
-                { value: "78%", label: "Clinical Adoption", sub: "up from 12%" },
-                { value: "2M+", label: "Diagnostic Assists", sub: "per month" },
-                { value: "<0.3%", label: "Hallucination Rate", sub: "measured in prod" },
-              ].map((kpi, i) => (
-                <motion.div
-                  key={kpi.label}
-                  className="bg-[#0d0d0d] text-[#f8f7f4] rounded-none p-6 flex flex-col gap-1"
-                  initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }} transition={{ duration: 0.45, delay: i * 0.07 }}
-                >
-                  <span className="text-3xl md:text-4xl font-bold text-[#3dafc9]">{kpi.value}</span>
-                  <span className="text-sm font-semibold">{kpi.label}</span>
-                  <span className="text-xs text-[#a0a0a0]">{kpi.sub}</span>
-                </motion.div>
+                { value: "60%", label: "Latency reduction", sub: "inference pipeline" },
+                { value: "78%", label: "Clinical adoption", sub: "up from 12%" },
+                { value: "2M+", label: "Diagnostic assists", sub: "per month" },
+                { value: "<0.3%", label: "Hallucination rate", sub: "measured in production" },
+              ].map((kpi) => (
+                <div key={kpi.label} className="flex flex-col gap-1 rounded-md bg-graphite p-6 text-paper">
+                  <span className="font-display text-[36px] leading-none text-sage">{kpi.value}</span>
+                  <span className="mt-2 text-sm font-semibold">{kpi.label}</span>
+                  <span className="text-xs text-graphite-muted">{kpi.sub}</span>
+                </div>
               ))}
             </div>
 
-            {/* Adoption bar chart */}
-            <motion.div
-              className="rounded-none p-8 mb-6" style={{ backgroundColor: "var(--color-white)", color: "rgb(0,0,0)" }}
-              initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <p className="text-xs font-semibold tracking-widest uppercase text-[#6b6b6b] mb-6">Clinical Adoption Over Time</p>
-              <div className="space-y-4">
+            <div className="rounded-md border border-rule bg-white p-8">
+              <p className="wx-eyebrow mb-6 text-xs">Clinical adoption over time</p>
+              <div className="flex flex-col gap-4">
                 {[
-                  { label: "Pre-engagement", pct: 12, color: "#d0cdc8" },
-                  { label: "Week 4", pct: 34, color: "#3dafc9" },
-                  { label: "Week 8 (launch)", pct: 61, color: "#3dafc9" },
-                  { label: "End of Q1", pct: 78, color: "rgb(53, 170, 210)" },
-                ].map((row) => (
+                  { label: "Pre-engagement", pct: 12, color: BEFORE },
+                  { label: "Week 4", pct: 34, color: "var(--color-accent)" },
+                  { label: "Week 8 (launch)", pct: 61, color: "var(--color-accent)" },
+                  { label: "End of Q1", pct: 78, color: "var(--color-accent)" },
+                ].map((row, i) => (
                   <div key={row.label} className="flex items-center gap-4">
-                    <span className="text-xs text-[#6b6b6b] w-32 shrink-0">{row.label}</span>
-                    <div className="flex-1 h-6 bg-[#e0ddd8] rounded-none overflow-hidden">
-                      <motion.div
-                        className="h-full rounded-none"
-                        style={{ backgroundColor: row.color }}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${row.pct}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                      />
+                    <span className="w-32 shrink-0 text-[13px] text-muted">{row.label}</span>
+                    <div className="h-6 flex-1 overflow-hidden rounded-sm bg-band">
+                      <motion.div className="h-full origin-left" style={{ width: `${row.pct}%`, backgroundColor: row.color }} {...grow(i * 0.08)} />
                     </div>
-                    <span className="text-sm font-bold w-10 text-right">{row.pct}%</span>
+                    <span className="w-10 text-right text-sm font-semibold">{row.pct}%</span>
                   </div>
                 ))}
               </div>
-            </motion.div>
-
-            {/* Latency + volume side by side */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Latency comparison */}
-              <motion.div
-                className="rounded-none p-8" style={{ backgroundColor: "var(--color-white)" }}
-                initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }} transition={{ duration: 0.5 }}
-              >
-                <p className="text-xs font-semibold tracking-widest uppercase text-[#6b6b6b] mb-6">Inference Latency (ms)</p>
-                <div className="flex items-end gap-6 h-32">
-                  {[
-                    { label: "Before", ms: 820, max: 820 },
-                    { label: "After", ms: 328, max: 820 },
-                  ].map((bar) => (
-                    <div key={bar.label} className="flex flex-col items-center gap-2 flex-1">
-                      <span className="text-sm font-bold">{bar.ms}ms</span>
-                      <div className="w-full bg-[#e0ddd8] rounded-t-lg overflow-hidden" style={{ height: 96 }}>
-                        <motion.div
-                          className="w-full rounded-none"
-                          style={{
-                            backgroundColor: bar.label === "Before" ? "#d0cdc8" : "#3dafc9",
-                            height: `${(bar.ms / bar.max) * 100}%`,
-                            marginTop: `${(1 - bar.ms / bar.max) * 96}px`,
-                          }}
-                          initial={{ scaleY: 0, originY: 1 }}
-                          whileInView={{ scaleY: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.7, ease: "easeOut" }}
-                        />
-                      </div>
-                      <span className="text-xs text-[#6b6b6b]">{bar.label}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-[#6b6b6b] mt-4">60% reduction in p95 inference latency</p>
-              </motion.div>
-
-              {/* Monthly volume */}
-              <motion.div
-                className="bg-[#0d0d0d] rounded-none p-8 text-[#f8f7f4]"
-                initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }} transition={{ duration: 0.5 }}
-              >
-                <p className="text-xs font-semibold tracking-widest uppercase text-[#a0a0a0] mb-6">Monthly Diagnostic Assists</p>
-                <div className="flex items-end gap-2 h-24">
-                  {[180, 420, 780, 1100, 1540, 2000].map((v, i) => (
-                    <div key={i} className="flex-1 bg-[#1a1a1a] rounded-t-sm overflow-hidden" style={{ height: 96 }}>
-                      <motion.div
-                        className="w-full rounded-none"
-                        style={{
-                          backgroundColor: i === 5 ? "#3dafc9" : `rgba(61,175,201,${0.3 + i * 0.12})`,
-                          height: `${(v / 2000) * 100}%`,
-                          marginTop: `${(1 - v / 2000) * 96}px`,
-                        }}
-                        initial={{ scaleY: 0, originY: 1 }}
-                        whileInView={{ scaleY: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: i * 0.08, ease: "easeOut" }}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-between mt-2">
-                  <span className="text-xs" style={{ color: "var(--color-white)" }}>Month 1</span>
-                  <span className="text-xs" style={{ color: "var(--color-white)" }}>Month 6</span>
-                </div>
-                <p className="text-xs text-[#a0a0a0] mt-3">Thousands of assists/month · steady ramp to 2M+</p>
-              </motion.div>
             </div>
-          </motion.div>
-        )}
 
-        {/* Additional visualizations — healthtech-mlops only */}
-        {slug === "healthtech-mlops" && (
-          <div className="mb-20 space-y-6">
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="rounded-md border border-rule bg-white p-8">
+                <p className="wx-eyebrow mb-6 text-xs">Inference latency (ms)</p>
+                <div className="flex h-32 items-end gap-6">
+                  {[
+                    { label: "Before", ms: 820, color: BEFORE },
+                    { label: "After", ms: 328, color: "var(--color-accent)" },
+                  ].map((bar, i) => (
+                    <div key={bar.label} className="flex flex-1 flex-col items-center gap-2">
+                      <span className="text-sm font-semibold">{bar.ms}ms</span>
+                      <div className="flex h-24 w-full items-end">
+                        <motion.div className="w-full origin-bottom rounded-t-sm" style={{ height: `${(bar.ms / 820) * 100}%`, backgroundColor: bar.color }} {...rise(i * 0.1)} />
+                      </div>
+                      <span className="text-xs text-muted">{bar.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs text-muted">60% reduction in p95 inference latency</p>
+              </div>
 
-            {/* Viz 1: Hallucination rate trend — segmented dot grid */}
-            <motion.div
-              className="bg-[#0d0d0d] p-8 text-[#f8f7f4]"
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.55 }}
-            >
-              <div className="flex items-start justify-between mb-6">
+              <div className="rounded-md bg-graphite p-8 text-paper">
+                <p className="wx-eyebrow mb-6 text-xs text-graphite-muted">Monthly diagnostic assists</p>
+                <div className="flex h-24 items-end gap-2">
+                  {[180, 420, 780, 1100, 1540, 2000].map((v, i) => (
+                    <motion.div
+                      key={v}
+                      className="flex-1 origin-bottom rounded-t-sm"
+                      style={{ height: `${(v / 2000) * 100}%`, backgroundColor: i === 5 ? "var(--color-sage)" : `rgba(204, 221, 205, ${0.3 + i * 0.1})` }}
+                      {...rise(i * 0.08)}
+                    />
+                  ))}
+                </div>
+                <div className="mt-2 flex justify-between text-xs text-graphite-muted">
+                  <span>Month 1</span>
+                  <span>Month 6</span>
+                </div>
+                <p className="mt-3 text-xs text-graphite-muted">Thousands of assists a month, a steady ramp to 2M+</p>
+              </div>
+            </div>
+
+            <div className="rounded-md bg-graphite p-8 text-paper">
+              <div className="mb-6 flex items-start justify-between gap-6">
                 <div>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-[#a0a0a0] mb-1">Hallucination Rate Trend</p>
-                  <p className="text-2xl font-bold text-[#3dafc9]">&lt;0.3% <span className="text-sm font-normal text-[#a0a0a0]">current</span></p>
+                  <p className="wx-eyebrow mb-1 text-xs text-graphite-muted">Hallucination rate</p>
+                  <p className="m-0 font-display text-[30px] text-sage">
+                    &lt;0.3% <span className="font-sans text-sm text-graphite-muted">current</span>
+                  </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-[#a0a0a0]">Started at</p>
-                  <p className="text-2xl font-bold">11.4%</p>
+                  <p className="m-0 text-xs text-graphite-muted">Started at</p>
+                  <p className="m-0 font-display text-[30px]">11.4%</p>
                 </div>
               </div>
-              <div className="flex items-end gap-1 h-20">
+              <div className="flex h-20 items-end gap-1">
                 {[11.4, 8.2, 5.7, 3.1, 1.4, 0.8, 0.5, 0.3].map((rate, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <div key={rate} className="flex flex-1 flex-col items-center gap-1">
                     <motion.div
-                      className="w-full"
-                      style={{
-                        backgroundColor: rate < 1 ? "#3dafc9" : rate < 4 ? "rgba(61,175,201,0.55)" : "rgba(61,175,201,0.25)",
-                        height: `${(rate / 11.4) * 72}px`,
-                        minHeight: 4,
-                      }}
-                      initial={{ scaleY: 0, originY: 1 }}
-                      whileInView={{ scaleY: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: i * 0.07, ease: "easeOut" }}
+                      className="w-full origin-bottom"
+                      style={{ height: `${Math.max((rate / 11.4) * 64, 4)}px`, backgroundColor: rate < 1 ? "var(--color-sage)" : "rgba(204, 221, 205, 0.4)" }}
+                      {...rise(i * 0.07)}
                     />
-                    <span className="text-[10px] text-[#a0a0a0]">{rate}%</span>
+                    <span className="text-[10px] text-graphite-muted">{rate}%</span>
                   </div>
                 ))}
               </div>
-              <div className="flex justify-between mt-3">
-                <span className="text-xs text-[#6b6b6b]">Baseline</span>
-                <span className="text-xs text-[#3dafc9] font-semibold">Week 8 production</span>
+              <div className="mt-3 flex justify-between text-xs">
+                <span className="text-graphite-muted">Baseline</span>
+                <span className="font-semibold text-sage">Week 8, in production</span>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Viz 2: System reliability scorecard — radar-style attribute grid */}
-            <motion.div
-              className="p-8 border border-[#e0ddd8]"
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.05 }}
-            >
-              <p className="text-xs font-semibold tracking-widest uppercase text-[#6b6b6b] mb-6">System Reliability Scorecard</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="rounded-md border border-rule bg-white p-8">
+              <p className="wx-eyebrow mb-6 text-xs">System reliability scorecard</p>
+              <div className="grid gap-5 md:grid-cols-2">
                 {[
-                  { attr: "Model Accuracy", before: 61, after: 94, unit: "%" },
+                  { attr: "Model accuracy", before: 61, after: 94, unit: "%" },
                   { attr: "Uptime SLA", before: 91, after: 99.7, unit: "%" },
-                  { attr: "Clinical Trust Score", before: 28, after: 87, unit: "/100" },
-                  { attr: "Audit Coverage", before: 12, after: 100, unit: "%" },
+                  { attr: "Clinical trust score", before: 28, after: 87, unit: "/100" },
+                  { attr: "Audit coverage", before: 12, after: 100, unit: "%" },
                 ].map((row) => (
                   <div key={row.attr}>
-                    <div className="flex justify-between mb-2">
+                    <div className="mb-2 flex justify-between gap-4">
                       <span className="text-sm font-semibold">{row.attr}</span>
-                      <span className="text-xs text-[#6b6b6b]">{row.before}{row.unit} → <span className="font-bold text-[#0d0d0d]">{row.after}{row.unit}</span></span>
+                      <span className="text-xs text-muted">
+                        {row.before}
+                        {row.unit} → <span className="font-semibold text-ink">{row.after}{row.unit}</span>
+                      </span>
                     </div>
-                    <div className="relative h-2 bg-[#e0ddd8]">
-                      {/* Before bar */}
-                      <div
-                        className="absolute top-0 left-0 h-full bg-[#d0cdc8]"
-                        style={{ width: `${(row.before / 100) * 100}%` }}
-                      />
-                      {/* After bar animated */}
-                      <motion.div
-                        className="absolute top-0 left-0 h-full bg-[#3dafc9]"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${Math.min((row.after / 100) * 100, 100)}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.9, ease: "easeOut", delay: 0.1 }}
-                      />
+                    <div className="relative h-2 overflow-hidden rounded-sm bg-band">
+                      <motion.div className="absolute inset-y-0 left-0 origin-left bg-accent" style={{ width: `${Math.min(row.after, 100)}%` }} {...grow(0.1)} />
+                      <div className="absolute inset-y-0 left-0" style={{ width: `${row.before}%`, backgroundColor: BEFORE }} />
                     </div>
-                    <div className="flex justify-between mt-1">
-                      <span className="text-[10px] text-[#d0cdc8]">Before</span>
-                      <span className="text-[10px] text-[#3dafc9]">After</span>
+                    <div className="mt-1 flex justify-between text-[11px]">
+                      <span className="text-muted">Before</span>
+                      <span className="text-accent">After</span>
                     </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
 
-            {/* Viz 3: 8-week delivery timeline */}
-            <motion.div
-              className="bg-[#f8f7f4] p-8 border border-[#e0ddd8]"
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.1 }}
-            >
-              <p className="text-xs font-semibold tracking-widest uppercase text-[#6b6b6b] mb-8">8-Week Delivery Timeline</p>
-              <div className="relative">
-                {/* Track line */}
-                <div className="absolute top-4 left-4 right-4 h-px bg-[#e0ddd8]" />
-                <div className="grid grid-cols-4 gap-4 relative">
-                  {[
-                    { week: "Wk 1–2", label: "Audit & Diagnosis", desc: "Pipeline teardown, hallucination root-cause mapping", color: "#d0cdc8" },
-                    { week: "Wk 3–4", label: "Guardrail Build", desc: "Deterministic fallbacks, evaluation harness deployed", color: "#3dafc9" },
-                    { week: "Wk 5–6", label: "Infra Migration", desc: "GPU cluster → auto-scaling inference fleet", color: "#3dafc9" },
-                    { week: "Wk 7–8", label: "Go-Live", desc: "Production launch, clinical onboarding, monitoring live", color: "#0d0d0d" },
-                  ].map((step, i) => (
-                    <motion.div
-                      key={step.week}
-                      className="flex flex-col items-center text-center"
-                      initial={{ opacity: 0, y: 12 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: i * 0.1 }}
-                    >
-                      <div
-                        className="w-8 h-8 flex items-center justify-center text-xs font-bold mb-3 z-10 relative"
-                        style={{ backgroundColor: step.color, color: step.color === "#0d0d0d" ? "#f8f7f4" : step.color === "#d0cdc8" ? "#6b6b6b" : "#0d0d0d" }}
-                      >
-                        {i + 1}
-                      </div>
-                      <p className="text-[10px] font-semibold tracking-widest uppercase text-[#6b6b6b] mb-1">{step.week}</p>
-                      <p className="text-sm font-bold mb-1">{step.label}</p>
-                      <p className="text-xs text-[#6b6b6b] leading-relaxed">{step.desc}</p>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-          </div>
+            <div className="rounded-md border border-rule bg-white p-8">
+              <p className="wx-eyebrow mb-8 text-xs">Eight-week delivery timeline</p>
+              <ol className="m-0 grid list-none grid-cols-2 gap-6 p-0 md:grid-cols-4">
+                {[
+                  { week: "Weeks 1 to 2", label: "Audit and diagnosis", desc: "Pipeline teardown and root-cause mapping of hallucinations" },
+                  { week: "Weeks 3 to 4", label: "Guardrail build", desc: "Deterministic fallbacks and an evaluation harness deployed" },
+                  { week: "Weeks 5 to 6", label: "Infrastructure move", desc: "From one GPU cluster to an auto-scaling inference fleet" },
+                  { week: "Weeks 7 to 8", label: "Go-live", desc: "Production launch, clinical onboarding and live monitoring" },
+                ].map((step, i) => (
+                  <li key={step.week} className="border-t-2 border-ink pt-4">
+                    <span className="font-mono text-[13px] text-accent">0{i + 1}</span>
+                    <p className="wx-eyebrow mt-2 text-[11px]">{step.week}</p>
+                    <p className="mt-1 mb-1 font-semibold">{step.label}</p>
+                    <p className="m-0 text-[13px] leading-relaxed text-muted">{step.desc}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
         )}
 
-        {/* Sections */}
-        <div className="space-y-16">
-          {cs.body.map((section, i) => (
-            <motion.div
-              key={section.heading}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.55, delay: i * 0.05 }}
-            >
-              <h2 className="text-2xl font-bold mb-4">{section.heading}</h2>
-              <p className="text-[#6b6b6b] leading-relaxed text-lg" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300 }}>{section.text}</p>
-            </motion.div>
+        {/* The story */}
+        <div className="flex flex-col gap-14">
+          {cs.body.map((section) => (
+            <section key={section.heading}>
+              <h2 className="mb-4 font-display text-[30px] font-normal leading-tight tracking-[-0.015em]">{section.heading}</h2>
+              <p className="m-0 text-[18.5px] leading-[1.7] text-body">{section.text}</p>
+            </section>
           ))}
         </div>
       </div>
 
-      {/* Related */}
+      {/* More case studies */}
       {others.length > 0 && (
-        <div className="border-t border-[#e0ddd8] px-6 py-20 max-w-7xl mx-auto" style={{ color: "rgb(0,0,0)" }}>
-          <h2 className="text-2xl font-bold mb-10">More Case Studies</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {others.map((other) => (
-              <Link to={`/work/${other.slug}`} key={other.slug}>
-                <motion.div className="group relative overflow-hidden rounded-none bg-[#e0ddd8] cursor-pointer"
-                  whileHover={{ y: -4 }} transition={{ duration: 0.25 }}>
-                  <div className="overflow-hidden h-56">
-                    <motion.img src={other.img} alt={other.client} className="w-full h-full object-cover"
-                      whileHover={{ scale: 1.06 }} transition={{ duration: 0.65 }} />
-                  </div>
-                  <div className="p-5">
-                    <p className="text-xs font-semibold tracking-widest uppercase text-[#3dafc9] mb-1">{other.industry}</p>
-                    <h3 className="font-bold group-hover:text-[#6b6b6b] transition-colors duration-200">{other.headline}</h3>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
+        <section aria-labelledby="more-h" className="bg-sage">
+          <div className={`${container} py-[clamp(64px,7vw,96px)]`}>
+            <h2 id="more-h" className="wx-h2 mb-10 text-[clamp(30px,3.4vw,44px)]">More case studies</h2>
+            <div className="grid gap-5 md:grid-cols-2">
+              {others.map((o) => (
+                <Link key={o.slug} to={`/work/${o.slug}`} className="wx-card">
+                  <span className="wx-muted font-mono text-[12.5px] uppercase tracking-[0.12em] text-muted">{o.industry}</span>
+                  <span className="mt-5 font-display text-[26px] leading-[1.2] tracking-[-0.015em]">{o.headline}</span>
+                  <span className="mt-5 font-display text-[20px] text-accent">{o.result}</span>
+                  <span className="mt-auto pt-6 text-[15.5px] font-semibold">
+                    Read the case study <span aria-hidden="true">→</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
       )}
     </article>
   );

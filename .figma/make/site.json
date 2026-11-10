@@ -1,1 +1,6 @@
-{}
+{
+  "title": "Wexley | Enterprise AI advisory",
+  "description": "Wexley is a lean enterprise AI advisory team. We build, secure and scale AI with governance built in, from data safeguards to production MLOps.",
+  "language": "en",
+  "icons": { "icon": "/favicon.png" }
+}
