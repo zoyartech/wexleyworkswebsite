@@ -1,331 +1,312 @@
-import { useState, useEffect } from "react";
-import heroBg from "@/imports/8.png";
-import caseImg0 from "@/imports/11-1.png";
-import caseImg1 from "@/imports/13.png";
-import articleImg0 from "@/imports/15.png";
-import articleImg1 from "@/imports/16.png";
-import articleImg2 from "@/imports/1-1.png";
-
-const HOME_CASE_IMGS: Record<number, string> = { 0: caseImg0, 1: caseImg1 };
-const HOME_ARTICLE_IMGS: Record<number, string> = { 0: articleImg0, 1: articleImg1, 2: articleImg2 };
 import { Link } from "react-router";
-import {
-  motion,
-  useReducedMotion,
-  AnimatePresence,
-  useMotionValue,
-  useTransform,
-  animate,
-  MotionValue,
-} from "motion/react";
 import { CASE_STUDIES, ARTICLES } from "@/data/shared";
+import wexMark from "@/imports/wexley-mark.png";
 
-const CLIENTS = [
-  "EU AI Act", "NIST AI RMF", "HIPAA", "ISO 27001", "GDPR",
-  "Zero-Trust", "MLOps", "LLM Security", "Data Lineage", "RAG Architecture", "FinReg",
-  "EU AI Act", "NIST AI RMF", "HIPAA", "ISO 27001", "GDPR",
-  "Zero-Trust", "MLOps", "LLM Security", "Data Lineage", "RAG Architecture", "FinReg",
+// Names only for now; swap in official logo files (with written permission) when they arrive.
+const CLIENTS: { name: string; wide?: boolean }[] = [
+  { name: "Morgan Stanley" },
+  { name: "McKinsey & Company" },
+  { name: "Deloitte" },
+  { name: "Salesforce" },
+  { name: "Principal Financial Group", wide: true },
+  { name: "Blue Cross Blue Shield" },
+  { name: "Exelon" },
+  { name: "Grammarly" },
+  { name: "B6 Mental Health" },
+  { name: "Rockefeller Capital Management", wide: true },
 ];
+
+const FRAMEWORKS = ["EU AI Act", "NIST AI RMF", "ISO 27001", "SOC 2", "HIPAA", "GDPR"];
 
 const PILLARS = [
   {
     number: "01",
-    title: "AI Governance & Data Safeguards",
+    title: "Governance & Safeguards",
     items: [
-      { label: "Zero-Trust AI Guardrails", desc: "Deploy real-time PII redaction, IP protection, and prompt-injection defense at the network edge." },
-      { label: "Automated Compliance", desc: "Turn complex regulatory frameworks (EU AI Act, NIST AI RMF, HIPAA, SOC 2) into continuous, exportable audit trails." },
-      { label: "Shadow AI Control", desc: "Gain total visibility into internal data flows, vendor LLMs, and unauthorized API usage across your tech stack." },
+      { label: "Zero-trust guardrails", desc: "Real-time PII redaction, IP protection and prompt-injection defense at the network edge." },
+      { label: "Automated compliance", desc: "EU AI Act, NIST AI RMF, HIPAA and SOC 2, turned into continuous audit trails you can export." },
+      { label: "Shadow AI control", desc: "Full visibility into internal data flows, vendor models and unsanctioned API use." },
     ],
   },
   {
     number: "02",
-    title: "AI Enablement & Architecture",
+    title: "Enablement & architecture",
     items: [
-      { label: "POC-to-Production Engineering", desc: "Break out of pilot purgatory with scalable backend pipelines integrated directly into legacy enterprise IT." },
-      { label: "Infrastructure & Cost Optimization", desc: "Right-size GPU compute, vector databases, and LLM routing to prevent unexpected cloud spend." },
-      { label: "Workflow Transformation", desc: "Align business process redesign and change management so business teams actually adopt new AI capabilities." },
+      { label: "Pilot to production", desc: "Pipelines built to scale and to connect with the legacy systems you already run." },
+      { label: "Cost optimization", desc: "Right-sized GPU compute, vector databases and model routing, so cloud spend stays predictable." },
+      { label: "Workflow change", desc: "Process redesign and change management, so teams actually use what gets built." },
     ],
   },
   {
     number: "03",
-    title: "Applied AI & Model Security",
+    title: "Applied AI & model security",
     items: [
-      { label: "Reliability & Hallucination Defense", desc: "Implement deterministic fallbacks, continuous evaluations, and human-in-the-loop workflows for high-stakes decisions." },
-      { label: "Adversarial Security", desc: "Protect models against prompt injection, data poisoning, and unauthorized model extraction." },
-      { label: "Lifecycle MLOps", desc: "Monitor latency, data drift, and output quality in real time post-deployment." },
+      { label: "Reliability", desc: "Deterministic fallbacks, continuous evaluation and human review for high-stakes decisions." },
+      { label: "Adversarial security", desc: "Protection against prompt injection, data poisoning and model extraction." },
+      { label: "Lifecycle MLOps", desc: "Live monitoring of latency, drift and output quality after launch." },
     ],
   },
 ];
 
-const COMPARISON = [
-  { area: "Data Governance", trap: "Months lost in manual legal & security reviews", impact: "Instant, automated policy enforcement & full data lineage" },
-  { area: "AI Enablement", trap: "Demos fail when connected to real legacy data", impact: "Scalable enterprise architecture built for high throughput" },
-  { area: "Applied AI", trap: "Unpredictable outputs halt production launches", impact: "Production-ready models with guaranteed accuracy thresholds" },
+const WORK = [
+  { slug: "global-bank-ai-governance", figure: "90 days", caption: "to SOC 2 Type II certification", headline: "Zero-trust AI guardrails across 14 business units" },
+  { slug: "healthtech-mlops", figure: "60%", caption: "lower inference latency", headline: "From pilot to production in eight weeks" },
+  { slug: "logistics-cost-optimization", figure: "$2.3M", caption: "saved a year on cloud spend", headline: "Cutting AI infrastructure spend by 47%" },
 ];
 
-const fadeUp = { hidden: { opacity: 0, y: 28 }, visible: { opacity: 1, y: 0 } };
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
+const COMPARISON = [
+  { area: "Data governance", alone: "Months lost to manual legal and security reviews.", wexley: "Policy enforced automatically, with full data lineage." },
+  { area: "AI enablement", alone: "Demos break the moment they meet real legacy data.", wexley: "Architecture built for enterprise scale and throughput." },
+  { area: "Applied AI", alone: "Unpredictable outputs hold up every launch.", wexley: "Models that ship with agreed accuracy thresholds." },
+];
 
-function DecorativeW({ spin = false, size = 120 }: { spin?: boolean; size?: number }) {
-  return (
-    <motion.svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-      style={{ width: size, height: size }}
-      animate={spin ? { rotate: 360 } : undefined}
-      transition={spin ? { duration: 22, ease: "linear", repeat: Infinity } : undefined}
-    >
-      <circle cx="60" cy="60" r="60" fill="#3dafc9" />
-      <path d="M28 38 L44 82 L60 52 L76 82 L92 38" stroke="#0d0d0d" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    </motion.svg>
-  );
+function shortDate(date: string) {
+  const d = new Date(date);
+  return Number.isNaN(d.getTime()) ? date : d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function CountUp({ count, suffix }: { count: MotionValue<number>; suffix: string }) {
-  const display = useTransform(count, (v) => Math.round(v) + suffix);
-  return <motion.span>{display}</motion.span>;
-}
-
-function AnimatedStat({ value, label }: { value: string; label: string }) {
-  const count = useMotionValue(0);
-  const numericMatch = value.match(/\d+/);
-  const numeric = numericMatch ? parseInt(numericMatch[0]) : null;
-  const suffix = value.replace(/\d+/, "");
-  useEffect(() => {
-    if (numeric === null) return;
-    const controls = animate(count, numeric, { duration: 1.6, ease: "easeOut", delay: 0.4 });
-    return controls.stop;
-  }, []);
-  return (
-    <motion.div variants={fadeUp}>
-      <div className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-        {numeric !== null ? <CountUp count={count} suffix={suffix} /> : value}
-      </div>
-      <div className="text-sm text-[#6b6b6b] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>{label}</div>
-    </motion.div>
-  );
-}
+const container = "mx-auto max-w-[1200px] px-5 md:px-10";
+const sectionPad = "py-[clamp(80px,9vw,128px)]";
 
 export default function Home() {
-  const [activePillar, setActivePillar] = useState(0);
-  const shouldReduce = useReducedMotion();
-
   return (
     <>
       {/* HERO */}
-      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-        {/* Background image */}
-        <img
-          src={heroBg}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover object-right"
-        />
-        {/* Soft overlay so text stays crisp */}
-        <div className="absolute inset-0 bg-[#f8f7f4]/50" />
-      <div className="relative max-w-7xl mx-auto px-6 pt-28 pb-20 w-full flex flex-col justify-center">
-        <div className="grid md:grid-cols-[1fr_auto] gap-12 items-end">
-          <motion.div variants={stagger} initial="hidden" animate="visible">
-            <motion.p variants={fadeUp} transition={{ duration: 0.5 }} className="text-sm font-medium tracking-widest uppercase text-[#6b6b6b] mb-8">
-              Enterprise AI Advisory&nbsp;&nbsp;
-            </motion.p>
-            <motion.h1 variants={fadeUp} transition={{ duration: 0.6 }} className="text-[clamp(2.8rem,7vw,6.5rem)] font-bold leading-[0.97] tracking-tight">
-              Turn AI Ambition<br />into <em className="not-italic text-[#3dafc9]">Audit-Ready</em><br />Enterprise Value.
-            </motion.h1>
-            <motion.p variants={fadeUp} transition={{ duration: 0.5 }} className="mt-10 text-lg max-w-xl leading-relaxed" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, color: "rgb(0, 0, 0)" }}>
-              From real-time data governance to production-grade MLOps, we help enterprise leaders build, secure, and scale custom AI applications&nbsp;&nbsp;without sacrificing velocity or compliance.
-            </motion.p>
-            <motion.div variants={fadeUp} transition={{ duration: 0.5 }} className="mt-10 flex flex-wrap gap-4">
-              <motion.a href="#contact" className="inline-flex items-center gap-2 text-base font-semibold bg-[#0d0d0d] text-[#f8f7f4] px-7 py-4 rounded-[10px]"
-                whileHover={shouldReduce ? {} : { scale: 1.04, backgroundColor: "#333" }}
-                whileTap={shouldReduce ? {} : { scale: 0.97 }} transition={{ duration: 0.18 }}>
-                Let's Talk <span aria-hidden="true">→</span>
-              </motion.a>
-              <motion.a href="#services" className="inline-flex items-center gap-2 text-base font-semibold border border-[#0d0d0d] text-[#0d0d0d] px-7 py-4 rounded-[10px]"
-                whileHover={shouldReduce ? {} : { scale: 1.04, backgroundColor: "#0d0d0d", color: "#f8f7f4" }}
-                whileTap={shouldReduce ? {} : { scale: 0.97 }} transition={{ duration: 0.18 }}>
-                Explore Services
-              </motion.a>
-            </motion.div>
-          </motion.div>
-          <motion.div className="hidden md:block flex-shrink-0 mb-4"
-            initial={{ opacity: 0, scale: 0.6, rotate: -20 }} animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}>
-          </motion.div>
+      <section aria-labelledby="hero-h" className={`${container} flex flex-wrap items-center gap-14 pt-[clamp(64px,8vw,112px)] pb-[clamp(64px,8vw,104px)]`}>
+        <div className="min-w-0 flex-[999_1_560px]">
+          <p className="wx-eyebrow mb-7 flex items-center gap-2.5">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
+            Enterprise AI advisory
+          </p>
+          <h1 id="hero-h" className="wx-h1">
+            AI ambition, made <em>audit-ready.</em>
+          </h1>
+          <p className="mt-8 max-w-[33em] text-[clamp(18px,1.6vw,21px)] leading-[1.55] text-body">
+            We help enterprise teams build, secure and scale AI, from data governance to production MLOps, without trading speed for compliance.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-3">
+            <Link to="/#contact" className="wx-btn">
+              Book a strategy call <span aria-hidden="true">→</span>
+            </Link>
+            <Link to="/#services" className="wx-link text-[16.5px]">
+              See what we do
+            </Link>
+          </div>
         </div>
-        <motion.div className="mt-24 grid grid-cols-3 gap-8 border-t border-[#e0ddd8] pt-10" variants={stagger} initial="hidden" animate="visible">
-          {[["93%", "Compliance audit pass rate"], ["60%", "Faster POC-to-prod"], ["$0", "Surprise cloud overruns"]].map(([num, label]) => (
-            <AnimatedStat key={label} value={num} label={label} />
-          ))}
-        </motion.div>
-      </div>
+
+        <figure className="m-0 flex min-w-0 flex-[1_1_360px] flex-col gap-3.5">
+          <svg viewBox="0 0 560 400" role="img" aria-label="A single hand-drawn line that starts low, loops into a W, and rises to the top right" className="block h-auto w-full overflow-visible">
+            <path
+              className="wx-line"
+              pathLength={1}
+              d="M28 318 C 74 318, 94 236, 118 150 C 126 120, 134 92, 142 96 C 148 150, 154 300, 182 330 C 196 344, 210 330, 220 290 C 232 240, 240 168, 258 160 C 272 156, 280 250, 296 312 C 304 340, 326 344, 336 316 C 350 276, 360 192, 382 150 C 410 102, 458 78, 528 72"
+              fill="none"
+              stroke="var(--color-accent)"
+              strokeWidth={3.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx={28} cy={318} r={6.5} fill="var(--color-paper)" stroke="var(--color-accent)" strokeWidth={3} />
+            <circle className="wx-ring" cx={528} cy={72} r={7} fill="none" stroke="var(--color-accent)" strokeWidth={2} />
+            <circle className="wx-end" cx={528} cy={72} r={7} fill="var(--color-accent)" />
+            <text x={28} y={356} fontFamily="IBM Plex Mono, monospace" fontSize={13} letterSpacing={1.5} fill="var(--color-muted)">PILOT</text>
+            <text className="wx-end-label" x={528} y={44} textAnchor="end" fontFamily="IBM Plex Mono, monospace" fontSize={13} letterSpacing={1.5} fill="var(--color-muted)">PRODUCTION</text>
+          </svg>
+          <figcaption className="border-t border-rule pt-3.5 font-mono text-[13px] leading-normal text-muted">
+            Fig. 1&nbsp; From pilot to production, with governance built in from the first step.
+          </figcaption>
+        </figure>
       </section>
 
-      {/* TICKER */}
-      <div className="overflow-hidden border-y border-[#e0ddd8] py-5" style={{ backgroundColor: "#7eff49" }}>
-        <div className="ticker-track select-none">
-          {CLIENTS.map((name, i) => (
-            <span key={i} className="inline-flex items-center gap-6 px-6">
-              <span className="text-sm font-semibold tracking-widest uppercase text-[#0d0d0d] whitespace-nowrap">{name}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3dafc9] flex-shrink-0" />
-            </span>
+      {/* LOGO WALL */}
+      <section aria-labelledby="clients-h" className={`${container} pb-[clamp(56px,6vw,80px)]`}>
+        <div className="mb-6 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+          <h2 id="clients-h" className="wx-eyebrow">Trusted by enterprise teams</h2>
+          <p className="m-0 text-[15px] text-muted">Financial services, insurance, healthcare, energy, consulting and technology</p>
+        </div>
+        <ul
+          className="m-0 grid list-none gap-px overflow-hidden rounded-md border border-rule bg-rule p-0"
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(max(150px, calc((100% - 3px) / 4)), 1fr))" }}
+        >
+          {CLIENTS.map((c) => (
+            <li
+              key={c.name}
+              className={`wx-tile flex min-h-28 items-center justify-center p-6 text-center text-lg font-semibold tracking-[-0.01em] ${c.wide ? "col-span-2" : ""}`}
+            >
+              {c.name}
+            </li>
           ))}
-        </div>
-      </div>
+        </ul>
+      </section>
 
-      {/* SERVICES */}
-      <section id="services" className="px-6 py-32 max-w-7xl mx-auto">
-        <motion.div className="mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.55 }}>
-          <p className="text-sm font-medium tracking-widest uppercase text-[#6b6b6b] mb-4">Core Service Pillars</p>
-          <h2 className="text-4xl md:text-5xl font-bold leading-tight max-w-2xl">Three disciplines. One integrated practice.</h2>
-        </motion.div>
-        <div className="flex gap-2 mb-12 flex-wrap">
-          {PILLARS.map((p, i) => {
-            const labels = ["AI Governance", "AI Enablement", "Applied AI"];
-            return (
-              <motion.button key={p.number} onClick={() => setActivePillar(i)}
-                className={`px-5 py-2.5 text-sm font-semibold border transition-colors duration-200 ${activePillar === i ? "border-[#0d0d0d]" : "bg-transparent text-[#6b6b6b] border-[#e0ddd8] hover:border-[#0d0d0d] hover:text-[#0d0d0d]"}`}
-                style={activePillar === i ? { borderRadius: 10, backgroundColor: "rgb(126, 255, 73)", color: "rgb(0, 0, 0)" } : { borderRadius: 15 }}
-                whileTap={shouldReduce ? {} : { scale: 0.96 }}>
-                {labels[i]}
-              </motion.button>
-            );
-          })}
-        </div>
-        <AnimatePresence mode="wait">
-          <motion.div key={activePillar} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.32, ease: "easeOut" }} className="grid md:grid-cols-[1fr_2fr] gap-16 items-start">
-            <div>
-              <span className="text-xs font-mono text-[#6b6b6b]">{PILLARS[activePillar].number}</span>
-              <h3 className="text-2xl md:text-3xl font-bold mt-2 mb-6 leading-tight">{PILLARS[activePillar].title}</h3>
-            </div>
-            <div className="divide-y divide-[#e0ddd8]">
-              {PILLARS[activePillar].items.map((item, i) => (
-                <motion.div key={item.label} className="py-8" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: i * 0.08 }}>
-                  <h4 className="text-lg font-bold mb-2">{item.label}</h4>
-                  <p className="text-[#6b6b6b] leading-relaxed" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300 }}>{item.desc}</p>
-                </motion.div>
+      {/* FRAMEWORKS MARQUEE */}
+      <section aria-label="Frameworks we work to" className="border-y border-rule">
+        <div className={`${container} flex items-center gap-7 py-5`}>
+          <p className="wx-eyebrow flex-none text-[12.5px]">We work to</p>
+          <div className="wx-marquee min-w-0 flex-1">
+            <div className="wx-track">
+              {[0, 1, 2].map((copy) => (
+                <ul
+                  key={copy}
+                  aria-hidden={copy > 0 ? true : undefined}
+                  className="m-0 flex list-none whitespace-nowrap p-0 font-display text-xl leading-[1.4] text-body"
+                >
+                  {FRAMEWORKS.map((f) => (
+                    <li key={f} className="flex items-center gap-8 pr-8">
+                      {f}
+                      <span aria-hidden="true" className="h-[5px] w-[5px] rounded-full bg-accent" />
+                    </li>
+                  ))}
+                </ul>
               ))}
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        </div>
       </section>
 
-      {/* FEATURED WORK */}
-      <section className="px-6 pb-32 max-w-7xl mx-auto" style={{ backgroundColor: "var(--tw-ring-offset-color)" }}>
-        <motion.div className="flex items-end justify-between mb-12 border-t border-[#e0ddd8] pt-12"
-          style={{ color: "rgb(0, 0, 0)" }}
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5 }}>
-          <div>
-            <p className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: "rgb(0, 0, 0)" }}>Featured Work</p>
-            <h2 className="text-4xl md:text-5xl font-bold">Case Studies</h2>
+      {/* SERVICES */}
+      <section id="services" aria-labelledby="services-h" className={`${container} ${sectionPad}`}>
+        <div className="mb-16 flex flex-wrap items-end justify-between gap-x-16 gap-y-6">
+          <div className="min-w-0 flex-[1_1_480px]">
+            <p className="wx-eyebrow mb-[18px]">What we do</p>
+            <h2 id="services-h" className="wx-h2">Three disciplines, one practice.</h2>
           </div>
-          <Link to="/work" className="hidden md:inline-flex text-sm font-medium underline underline-offset-4 hover:text-[#0d0d0d] transition-colors" style={{ color: "rgb(0, 0, 0)" }}>
-            View all work →
-          </Link>
-        </motion.div>
-        <div className="grid md:grid-cols-2 gap-5">
-          {CASE_STUDIES.slice(0, 2).map((cs, i) => (
-            <Link to={`/work/${cs.slug}`} key={cs.slug}>
-              <motion.div className="group relative overflow-hidden rounded-none bg-[#e0ddd8] cursor-pointer"
-                initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.5, delay: i * 0.08 }} whileHover={shouldReduce ? {} : { y: -4 }}>
-                <div className="overflow-hidden h-72 md:h-80">
-                  <motion.img src={HOME_CASE_IMGS[i] ?? cs.img} alt={cs.client} className="w-full h-full object-cover rounded-none"
-                    whileHover={shouldReduce ? {} : { scale: 1.06 }} transition={{ duration: 0.65 }} />
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#0d0d0d]/70 to-transparent">
-                  <h3 className="text-xl font-bold text-white">{cs.headline}</h3>
-                </div>
-              </motion.div>
-            </Link>
+          <p className="m-0 max-w-[30em] flex-[1_1_360px] text-body">
+            Most firms cover one piece. We bring governance, architecture and model security together, so nothing falls between teams.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-x-10 gap-y-12">
+          {PILLARS.map((p) => (
+            <div key={p.number} className="min-w-0 flex-[1_1_300px] border-t-2 border-ink pt-[22px]">
+              <p className="m-0 font-mono text-[13px] text-accent">{p.number}</p>
+              <h3 className="mt-2 mb-2 font-display text-[27px] font-normal leading-[1.15] tracking-[-0.015em]">{p.title}</h3>
+              <dl className="m-0">
+                {p.items.map((item, i) => (
+                  <div key={item.label} className={`py-[18px] ${i < p.items.length - 1 ? "border-b border-rule" : ""}`}>
+                    <dt className="font-semibold">{item.label}</dt>
+                    <dd className="m-0 mt-1 text-[15.5px] text-muted">{item.desc}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* WHY US */}
-      <section id="why-us" className="text-[#f8f7f4]" style={{ backgroundColor: "#373737" }}>
-        <div className="max-w-7xl mx-auto px-6 py-32">
-          <motion.div className="mb-16" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
-            style={{ boxShadow: "none" }}>
-            <p className="text-sm font-medium tracking-widest uppercase text-[#3dafc9] mb-4">Why Enterprise Leaders Partner With Us</p>
-            <h2 className="text-4xl md:text-5xl font-bold leading-tight max-w-2xl">The gap between demo and done is where most AI programs fail.</h2>
-            <p className="mt-8 text-lg max-w-2xl leading-relaxed text-[#d9d9d9]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300 }}>
-              <strong className="font-semibold text-white">Small by design.</strong> Wexley is a lean team, not a consulting army, so the people who scope your governance are the people who build it. Nothing gets lost in a handoff, and every decision is documented, compliant and ready for audit from day one.
+      {/* SELECTED WORK */}
+      <section id="work" aria-labelledby="work-h" className="bg-sage">
+        <div className={`${container} ${sectionPad}`}>
+          <div className="mb-14 flex flex-wrap items-end justify-between gap-x-12 gap-y-5">
+            <div>
+              <p className="wx-eyebrow mb-[18px] text-sage-ink">Selected work</p>
+              <h2 id="work-h" className="wx-h2">Work that made it to production.</h2>
+            </div>
+            <Link to="/work" className="wx-link">
+              All case studies <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-5">
+            {WORK.map((w) => {
+              const cs = CASE_STUDIES.find((c) => c.slug === w.slug);
+              if (!cs) return null;
+              return (
+                <Link key={w.slug} to={`/work/${w.slug}`} className="wx-card min-w-0 flex-[1_1_320px]">
+                  <span className="wx-muted font-mono text-[12.5px] uppercase tracking-[0.12em] text-muted">{cs.industry}</span>
+                  <span className="mt-9 font-display text-[68px] font-light leading-none tracking-[-0.03em] text-accent">{w.figure}</span>
+                  <span className="wx-muted mt-2 text-[15.5px] text-muted">{w.caption}</span>
+                  <span className="mt-9 border-t border-rule pt-5 text-[19px] font-semibold leading-[1.35]">{w.headline}</span>
+                  <span className="wx-muted mt-1.5 text-[15.5px] text-muted">{cs.client}</span>
+                  <span className="mt-auto pt-7 text-[15.5px] font-semibold">
+                    Read the case study <span aria-hidden="true">→</span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* WHY WEXLEY */}
+      <section id="why-us" aria-labelledby="why-h" className="bg-graphite text-paper">
+        <div className={`${container} ${sectionPad}`}>
+          <p className="wx-eyebrow mb-[18px] text-sage">Why Wexley</p>
+          <h2 id="why-h" className="wx-h2 mb-12 max-w-[18em] text-[clamp(34px,3.9vw,54px)] leading-[1.1]">
+            Most AI programs stall between the demo and the launch. <em className="text-sage">That gap is our job.</em>
+          </h2>
+          <div className="mb-14 flex flex-wrap gap-x-16 gap-y-4 border-t border-graphite-rule pt-8">
+            <p className="m-0 flex-[1_1_220px] font-display text-[30px] leading-[1.15]">Small by design.</p>
+            <p className="m-0 max-w-[36em] flex-[2_1_480px] text-[18.5px] leading-[1.6] text-graphite-body">
+              Wexley is a lean team, not a consulting army. The people who scope your governance are the people who build it, so nothing gets lost in a handoff. That is why our work is thorough, documented and audit-ready from day one, and why we can move quickly without cutting corners.
             </p>
-          </motion.div>
-          <motion.div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-[#ffffff14]"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}>
-            <div className="text-xs font-semibold tracking-widest uppercase text-white">Challenge Area</div>
-            <div className="text-xs font-semibold tracking-widest uppercase text-white">Internal DIY Trap</div>
-            <div className="text-xs font-semibold tracking-widest uppercase text-white">Our Done-With-You Impact</div>
-          </motion.div>
-          <div className="divide-y divide-[#ffffff0f]">
-            {COMPARISON.map((row, i) => (
-              <motion.div key={row.area} className="grid grid-cols-3 gap-4 py-8"
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5, delay: i * 0.1 }}>
-                <div className="font-bold text-lg">{row.area}</div>
-                <div className="text-[#a0a0a0] leading-relaxed" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300 }}>{row.trap}</div>
-                <div className="text-[#f8f7f4] leading-relaxed font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>{row.impact}</div>
-              </motion.div>
+          </div>
+          <div className="border-t border-graphite-rule">
+            {COMPARISON.map((row) => (
+              <div key={row.area} className="flex flex-wrap gap-x-10 gap-y-4 border-b border-graphite-rule py-8">
+                <h3 className="m-0 flex-[1_1_220px] font-display text-[26px] font-normal leading-[1.2]">{row.area}</h3>
+                <p className="m-0 flex-[1_1_280px] text-graphite-muted">
+                  <span className="mb-1.5 block font-mono text-xs uppercase tracking-[0.12em]">Doing it alone</span>
+                  {row.alone}
+                </p>
+                <p className="m-0 flex-[1_1_280px]">
+                  <span className="mb-1.5 block font-mono text-xs uppercase tracking-[0.12em] text-sage">With Wexley</span>
+                  {row.wexley}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FEATURED ARTICLES */}
-      <section className="px-6 py-32 max-w-7xl mx-auto" style={{ backgroundColor: "rgb(255, 255, 255)" }}>
-        <motion.div className="flex items-end justify-between mb-12"
-          style={{ color: "rgb(0, 0, 0)" }}
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
+      {/* INSIGHTS */}
+      <section id="insights" aria-labelledby="insights-h" className={`${container} ${sectionPad}`}>
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-x-12 gap-y-5">
           <div>
-            <p className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: "rgb(0, 0, 0)" }}>Latest Thinking</p>
-            <h2 className="text-4xl md:text-5xl font-bold">Articles</h2>
+            <p className="wx-eyebrow mb-[18px]">Insights</p>
+            <h2 id="insights-h" className="wx-h2">Notes from the field.</h2>
           </div>
-          <Link to="/articles" className="hidden md:inline-flex text-sm font-medium underline underline-offset-4 text-[#6b6b6b] hover:text-[#0d0d0d] transition-colors">
-            View all articles →
+          <Link to="/articles" className="wx-link">
+            All articles <span aria-hidden="true">→</span>
           </Link>
-        </motion.div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {ARTICLES.slice(0, 3).map((article, i) => (
-            <Link to={`/articles/${article.slug}`} key={article.slug}>
-              <motion.div className="group cursor-pointer" style={i === 0 ? { color: "rgb(0, 0, 0)" } : {}} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: i * 0.08 }}>
-                <div className="overflow-hidden rounded-none bg-[#e0ddd8] h-48 mb-4">
-                  <motion.img src={HOME_ARTICLE_IMGS[i] ?? article.img} alt={article.title} className="w-full h-full object-cover"
-                    whileHover={shouldReduce ? {} : { scale: 1.05 }} transition={{ duration: 0.55 }} />
-                </div>
-                <p className="text-xs font-semibold tracking-widest uppercase text-[#3dafc9] mb-2">{article.category}</p>
-                <h3 className="text-lg font-bold leading-snug mb-2 group-hover:text-[#6b6b6b] transition-colors duration-200">{article.title}</h3>
-              </motion.div>
-            </Link>
-          ))}
         </div>
+        <ul className="m-0 list-none border-t border-ink p-0">
+          {ARTICLES.slice(0, 3).map((a) => (
+            <li key={a.slug} className="border-b border-rule">
+              <Link to={`/articles/${a.slug}`} className="wx-row">
+                <span className="wx-muted flex-[0_1_240px] font-mono text-[12.5px] uppercase tracking-[0.1em] text-muted">
+                  {a.category} · {shortDate(a.date)}
+                </span>
+                <span className="min-w-0 flex-[999_1_420px] font-display text-[26px] leading-[1.25] tracking-[-0.01em]">{a.title}</span>
+                <span className="wx-muted flex-none text-[15px] text-muted">
+                  {a.readTime} <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
-      {/* CTA */}
-      <section id="contact" className="px-6 py-32 max-w-7xl mx-auto text-center" style={{ backgroundColor: "rgb(255, 255, 255)" }}>
-        <motion.p className="text-sm font-medium tracking-widest uppercase text-[#6b6b6b] mb-6"
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          Stop choosing between compliance and execution
-        </motion.p>
-        <motion.h2 className="text-[clamp(2.2rem,5.5vw,5rem)] font-bold leading-[1.05] tracking-tight mb-8"
-          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
-          Accelerate Your&nbsp;&nbsp;Advantage<br />
-          <em className="not-italic text-[#3dafc9]">Without the&nbsp;&nbsp;Risk.</em>
-        </motion.h2>
-        <motion.p className="max-w-xl mx-auto mb-12 text-lg leading-relaxed"
-          style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, color: "rgb(0, 0, 0)" }}
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}>
-          Partner with specialists who understand complex data infrastructure, security, and applied AI at enterprise scale.
-        </motion.p>
-        <motion.div className="flex flex-col sm:flex-row gap-4 justify-center"
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}>
-          <motion.a href="mailto:enterprise@wexley.ai" className="inline-flex items-center justify-center gap-2 text-base font-semibold bg-[#0d0d0d] text-[#f8f7f4] rounded-[10px]"
-            style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12, height: "100%" }}
-            whileHover={shouldReduce ? {} : { scale: 1.04, backgroundColor: "#333" }} whileTap={shouldReduce ? {} : { scale: 0.97 }}>
-            Lets Talk <span aria-hidden="true">↗</span>
-          </motion.a>
-        </motion.div>
+      {/* CONTACT */}
+      <section id="contact" aria-labelledby="cta-h" className="bg-sage">
+        <div className={`${container} ${sectionPad} flex flex-wrap items-center justify-between gap-12`}>
+          <div className="min-w-0 flex-[999_1_560px]">
+            <p className="wx-eyebrow mb-[18px] text-sage-ink">Compliance and speed, together</p>
+            <h2 id="cta-h" className="wx-h2 text-[clamp(44px,5.6vw,80px)] leading-[1.02]">
+              Build it right <em>the first time.</em>
+            </h2>
+            <p className="mt-7 max-w-[32em] text-[19px] text-body">
+              Talk to specialists in enterprise data, security and applied AI. We'll tell you plainly what it takes to get to production.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-3">
+              <a href="mailto:enterprise@wexley.ai?subject=Strategy%20call" className="wx-btn">
+                Book a strategy call <span aria-hidden="true">→</span>
+              </a>
+              <a href="mailto:enterprise@wexley.ai" className="wx-link text-[16.5px]">
+                enterprise@wexley.ai
+              </a>
+            </div>
+          </div>
+          <img src={wexMark} alt="" className="block h-auto w-[clamp(140px,16vw,220px)] flex-none" />
+        </div>
       </section>
     </>
   );
