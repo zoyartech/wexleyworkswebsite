@@ -248,6 +248,9 @@ export default function Home() {
             style={{ boxShadow: "none" }}>
             <p className="text-sm font-medium tracking-widest uppercase text-[#3dafc9] mb-4">Why Enterprise Leaders Partner With Us</p>
             <h2 className="text-4xl md:text-5xl font-bold leading-tight max-w-2xl">The gap between demo and done is where most AI programs fail.</h2>
+            <p className="mt-8 text-lg max-w-2xl leading-relaxed text-[#d9d9d9]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300 }}>
+              <strong className="font-semibold text-white">Small by design.</strong> Wexley is a lean team, not a consulting army, so the people who scope your governance are the people who build it. Nothing gets lost in a handoff, and every decision is documented, compliant and ready for audit from day one.
+            </p>
           </motion.div>
           <motion.div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-[#ffffff14]"
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}>

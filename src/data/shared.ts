@@ -1,7 +1,7 @@
 export const CASE_STUDIES = [
   {
     slug: "global-bank-ai-governance",
-    client: "Global Bank Corp",
+    client: "A Tier-1 global bank",
     tags: "AI Governance · Compliance",
     headline: "Zero-Trust AI Guardrails at Global Scale",
     summary: "Deployed real-time PII redaction and prompt-injection defense across 14 business units, achieving SOC 2 Type II certification in 90 days.",
@@ -33,7 +33,7 @@ export const CASE_STUDIES = [
   },
   {
     slug: "retail-shadow-ai",
-    client: "Meridian Retail Group",
+    client: "A global retail group",
     tags: "Shadow AI · Data Governance",
     headline: "Eliminating Shadow AI Across 6,000 Employees",
     summary: "Gained full visibility into unauthorized LLM API usage across a global workforce and implemented governed AI access in under 60 days.",
@@ -49,7 +49,7 @@ export const CASE_STUDIES = [
   },
   {
     slug: "logistics-cost-optimization",
-    client: "Apex Logistics",
+    client: "A major logistics company",
     tags: "Infrastructure · Cost Optimization",
     headline: "Cutting AI Infrastructure Spend by 47%",
     summary: "Right-sized GPU compute and LLM routing for a logistics giant, eliminating $2.3M in annual cloud overspend without degrading model performance.",

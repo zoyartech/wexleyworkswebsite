@@ -18,7 +18,7 @@ export default function About() {
             We are a studio that thinks <em className="not-italic text-[#3dafc9]">before</em> it builds.
           </h1>
           <p className="mt-8 text-xl text-[#6b6b6b] max-w-2xl leading-relaxed" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300 }}>
-            Founded in 2018, Wexley is an independent AI advisory and engineering studio. We work with enterprise leaders who believe that getting AI right is worth taking the time to do it properly.
+            Founded in 2018, Wexley is an independent AI advisory and engineering studio. We work with enterprise leaders who believe that getting AI right is worth taking the time to do it properly. We stay lean on purpose: a small team means the people who design your governance are the people who build it, which is why our work is thorough, compliant and documented from day one.
           </p>
         </motion.div>
       </section>
