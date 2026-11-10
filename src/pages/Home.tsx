@@ -94,7 +94,7 @@ export default function Home() {
           </div>
         </div>
 
-        <figure className="m-0 flex min-w-0 flex-[1_1_360px] flex-col gap-3.5">
+        <figure className="m-0 flex min-w-0 max-w-[520px] flex-[1_1_360px] flex-col gap-3.5">
           <svg viewBox="0 0 560 400" role="img" aria-label="A single hand-drawn line that starts low, loops into a W, and rises to the top right" className="block h-auto w-full overflow-visible">
             <path
               className="wx-line"
